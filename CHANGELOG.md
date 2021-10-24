@@ -690,3 +690,6 @@
 ### 211023a (4.3.0-post3)
 * Removed leftover timer creation code
 * Fixed passwords in `config.yaml` being erroneously casted to wrong types when possible
+
+### (4.3.1)
+* Added `visible_areas` support to `areas.yaml`. If included in an area, it will set the areas visible to a player in the area. By default it is the same as the reachable areas
