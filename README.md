@@ -191,6 +191,8 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Ends your party.
 * **party_id**
     - Returns your party ID.
+* **party_info**
+    - Lists information about your party, including the leaders and regular members of your party.
 * **party_invite** "ID/char name/edited-to character/showname/char showname/OOC name"
     - Invites a player in the same area to your party.
 * **party_join** "party ID"
@@ -203,8 +205,6 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Makes you leave your party.
     - Other people in the party are warned of your departure if you are not sneaking.
     - If you are the last player to leave the party, it will be automatically ended.
-* **party_members**
-    - Lists the leaders and regular members of your party.
 * **party_uninvite** "ID/char name/edited-to character/showname/char showname/OOC name"
     - Revokes an invitation sent to a player to join your player.
 * **party_unlead**

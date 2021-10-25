@@ -693,3 +693,4 @@
 
 ### (4.3.1)
 * Added `visible_areas` support to `areas.yaml`. If included in an area, it will set the areas visible to a player in the area. By default it is the same as the reachable areas
+* Renamed /party_members to /party_info (/party_members is still valid but marked for removal)

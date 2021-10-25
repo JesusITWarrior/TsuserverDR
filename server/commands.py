@@ -5003,6 +5003,41 @@ def ooc_cmd_party_id(client: ClientManager.Client, arg: str):
     client.send_ooc('Your party ID is: {}'.format(party.get_id()))
 
 
+def ooc_cmd_party_info(client: ClientManager.Client, arg: str):
+    """
+    Obtains information about the party. Currently, that information includes the leaders and
+    regular members of your party. Any members that are sneaking will continue to appear in this
+    list.
+    Returns an error if you are not part of a party.
+
+    SYNTAX
+    /party_info
+
+    PARAMETERS
+    None
+
+    EXAMPLES
+    /party_info      :: May return something like this
+    == Party 11037 ==
+    *Leaders: Phantom_HD, Spam_HD
+    *Members: Eggs_HD
+    """
+
+    Constants.assert_command(client, arg, parameters='=0')
+
+    party = client.get_party(tc=True)
+    regulars, leaders = party.get_members_leaders()
+    regulars, leaders = sorted(regulars), sorted(leaders)
+    info = '== Members of party {} =='.format(party.get_id())
+    if leaders:
+        names = ' '.join([f'[{c.id}] {c.displayname}' for c in leaders])
+        info += '\r\n*Leaders: {}'.format(names)
+    if regulars:
+        names = ' '.join([f'[{c.id}] {c.displayname}' for c in regulars])
+        info += '\r\n*Members: {}'.format(names)
+    client.send_ooc(info)
+
+
 def ooc_cmd_party_invite(client: ClientManager.Client, arg: str):
     """
     Sends an invite to another player by client ID to join the party. The invitee will receive an
@@ -5200,40 +5235,6 @@ def ooc_cmd_party_list(client: ClientManager.Client, arg: str):
         regulars = ', '.join([c.displayname for c in raw_regulars]) if raw_regulars else 'None'
         info += ('\r\n*Party {} [{}/{}] ({}). Leaders: {}. Regular members: {}.'
                  .format(pid, num_members, player_limit, area.id, leaders, regulars))
-    client.send_ooc(info)
-
-
-def ooc_cmd_party_members(client: ClientManager.Client, arg: str):
-    """
-    Obtains the leaders and regular members of your party. Any members that are sneaking will
-    continue to appear in this list.
-    Returns an error if you are not part of a party.
-
-    SYNTAX
-    /party_members
-
-    PARAMETERS
-    None
-
-    EXAMPLES
-    /party_members      :: May return something like this
-    == Members of party 11037 ==
-    *Leaders: Phantom_HD, Spam_HD
-    *Members: Eggs_HD
-    """
-
-    Constants.assert_command(client, arg, parameters='=0')
-
-    party = client.get_party(tc=True)
-    regulars, leaders = party.get_members_leaders()
-    regulars, leaders = sorted(regulars), sorted(leaders)
-    info = '== Members of party {} =='.format(party.get_id())
-    if leaders:
-        names = ' '.join([f'[{c.id}] {c.displayname}' for c in leaders])
-        info += '\r\n*Leaders: {}'.format(names)
-    if regulars:
-        names = ' '.join([f'[{c.id}] {c.displayname}' for c in regulars])
-        info += '\r\n*Members: {}'.format(names)
     client.send_ooc(info)
 
 

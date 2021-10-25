@@ -77,6 +77,15 @@ def ooc_cmd_party_disband(client, arg):
     do_command_deprecated('party_end', client, arg)
 
 
+def ooc_cmd_party_members(client, arg):
+    """
+    Old name for /party_info.
+
+    """
+
+    do_command_deprecated('party_info', client, arg)
+
+
 def ooc_cmd_timer_cancel(client, arg):
     """
     Old name for /timer_end.
