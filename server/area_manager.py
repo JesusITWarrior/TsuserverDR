@@ -24,25 +24,26 @@ all necessary actions in order to simulate different rooms.
 """
 
 from __future__ import annotations
-import typing
-from typing import Any, Callable, Dict, List, Set, Tuple
-if typing.TYPE_CHECKING:
-    # Avoid circular referencing
-    from server.client_manager import ClientManager
-    from server.party_manager import PartyManager
-    from server.tsuserver import TsuserverDR
-    from server.zone_manager import ZoneManager
 
 import asyncio
 import time
+import typing
+
+from typing import Any, Callable, Dict, List, Set
 
 from server import logger
 from server.constants import Constants
 from server.evidence import EvidenceList
 from server.exceptions import AreaError, ServerError
 from server.subscriber import Publisher
-
 from server.validate.areas import ValidateAreas
+
+if typing.TYPE_CHECKING:
+    # Avoid circular referencing
+    from server.client_manager import ClientManager
+    from server.party_manager import PartyManager
+    from server.tsuserver import TsuserverDR
+    from server.zone_manager import ZoneManager
 
 
 class AreaManager:
@@ -190,10 +191,10 @@ class AreaManager:
 
             try:
                 self.clients.remove(client)
-            except KeyError:
+            except KeyError as exc:
                 if not client.id == -1: # Ignore pre-clients (before getting playercount)
-                    info = 'Area {} does not contain client {}'.format(self, client)
-                    raise KeyError(info)
+                    info = f'Area {self} does not contain client {client}'
+                    raise KeyError(info) from exc
 
             if not self.clients:
                 self.unlock()
@@ -210,8 +211,8 @@ class AreaManager:
                 Packet arguments.
             """
 
-            for c in self.clients:
-                c.send_command(cmd, *args)
+            for player in self.clients:
+                player.send_command(cmd, *args)
 
         def send_command_dict(self, cmd: str, dargs: Dict[str, Any]):
             """
@@ -272,18 +273,29 @@ class AreaManager:
                     player.send_ic_attention()
 
         def get_background_tod(self) -> Dict[str, str]:
+            """
+            Get the background names associated with different times of day for the current area.
+            If the lights are off, an empty dictionary is returned instead.
+
+            Returns
+            -------
+            Dict[str, str]
+                Map of time of day to associated background name.
+            """
+
             if not self.lights:
                 return dict()
 
             return self.background_tod.copy()
 
-        def change_background(self, bg: str, validate: bool = True, override_blind: bool = False):
+        def change_background(self, background: str, validate: bool = True,
+                              override_blind: bool = False):
             """
             Change the background of the current area.
 
             Parameters
             ----------
-            bg: str
+            background: str
                 New background name.
             validate: bool, optional
                 Whether to first determine if background name is listed as a server background
@@ -298,20 +310,22 @@ class AreaManager:
                 If the server attempted to validate the background name and failed.
             """
 
-            if validate and bg.lower() not in [name.lower() for name in self.server.backgrounds]:
+            valid_bg = background.lower() in [name.lower() for name in self.server.backgrounds]
+            if validate and not valid_bg:
                 raise AreaError('Invalid background name.')
 
             if self.lights:
-                self.background = bg
+                self.background = background
             else:
                 self.background = self.server.config['blackout_background']
-                self.background_backup = bg
-            for c in self.clients:
-                if c.is_blind and not override_blind:
-                    c.send_background(name=self.server.config['blackout_background'])
+                self.background_backup = background
+
+            for player in self.clients:
+                if player.is_blind and not override_blind:
+                    player.send_background(name=self.server.config['blackout_background'])
                 else:
-                    c.send_background(name=self.background,
-                                      tod_backgrounds=self.get_background_tod())
+                    player.send_background(name=self.background,
+                                           tod_backgrounds=self.get_background_tod())
 
         def get_chars_unusable(self, allow_restricted: bool = False,
                                more_unavail_chars: Set[int] = None) -> Set[int]:
@@ -421,8 +435,8 @@ class AreaManager:
             if len(self.dicelog) >= 20:
                 self.dicelog = self.dicelog[1:]
 
-            info = '{} | [{}] {} ({}) {}'.format(Constants.get_time(), client.id,
-                                                 client.displayname, client.get_ip(), msg)
+            info = (f'{Constants.get_time()} | [{client.id}] {client.displayname} '
+                    f'({client.get_ip()}) {msg}')
             self.dicelog.append(info)
 
         def get_dicelog(self) -> str:
@@ -430,13 +444,13 @@ class AreaManager:
             Return the dice log of the area.
             """
 
-            info = '== Dice log of area {} ({}) =='.format(self.name, self.id)
+            info = f'== Dice log of area {self.name} ({self.id}) =='
 
             if not self.dicelog:
                 info += '\r\nNo dice have been rolled since the area was loaded.'
             else:
                 for log in self.dicelog:
-                    info += '\r\n*{}'.format(log)
+                    info += f'\r\n*{log}'
             return info
 
         def change_doc(self, doc: str = 'No document.'):
@@ -555,8 +569,8 @@ class AreaManager:
             if len(self.judgelog) >= 20:
                 self.judgelog = self.judgelog[1:]
 
-            info = '{} | [{}] {} ({}) {}'.format(Constants.get_time(), client.id,
-                                                 client.displayname, client.get_ip(), msg)
+            info = (f'{Constants.get_time()} | [{client.id}] {client.displayname} '
+                    f'({client.get_ip()}) {msg}')
             self.judgelog.append(info)
 
         def get_judgelog(self) -> str:
@@ -564,13 +578,13 @@ class AreaManager:
             Return the judge log of the area.
             """
 
-            info = '== Judge log of {} ({}) =='.format(self.name, self.id)
+            info = f'== Judge log of {self.name} ({self.id}) =='
 
             if not self.judgelog:
                 info += '\r\nNo judge actions have been performed since the area was loaded.'
             else:
                 for log in self.judgelog:
-                    info += '\r\n*{}'.format(log)
+                    info += f'\r\n*{log}'
             return info
 
         def change_lights(self, new_lights: bool, initiator: ClientManager.Client = None,
@@ -600,7 +614,8 @@ class AreaManager:
 
             status = {True: 'on', False: 'off'}
             if self.lights == new_lights:
-                raise AreaError('The lights are already turned {}.'.format(status[new_lights]))
+                err = f'The lights are already turned {status[new_lights]}.'
+                raise AreaError(err)
 
             # Change background to match new status
             if new_lights:
@@ -620,32 +635,37 @@ class AreaManager:
             if initiator: # If a player initiated the change light sequence, send targeted messages
                 if area is None:
                     if not initiator.is_blind:
-                        initiator.send_ooc('You turned the lights {}.'.format(status[new_lights]))
+                        msg = f'You turned the lights {status[new_lights]}.'
                     elif not initiator.is_deaf:
-                        initiator.send_ooc('You hear a flicker.')
+                        msg = 'You hear a flicker.'
                     else:
-                        initiator.send_ooc('You feel a light switch was flipped.')
+                        msg = 'You feel a light switch was flipped.'
+                    initiator.send_ooc(msg)
 
-                initiator.send_ooc_others('The lights were turned {}.'.format(status[new_lights]),
-                                          is_zstaff_flex=False, in_area=area if area else True, to_blind=False)
-                initiator.send_ooc_others('You hear a flicker.', is_zstaff_flex=False, in_area=area if area else True,
+                msg1 = f'The lights were turned {status[new_lights]}.'
+                msg2 = 'You hear a flicker.'
+                msg3 = (f'(X) {initiator.displayname} [{initiator.id}] turned the lights '
+                        f'{status[new_lights]}.')
+                initiator.send_ooc_others(msg1, is_zstaff_flex=False,
+                                          in_area=area if area else True,
+                                          to_blind=False)
+                initiator.send_ooc_others(msg2, is_zstaff_flex=False,
+                                          in_area=area if area else True,
                                           to_blind=True, to_deaf=False)
-                initiator.send_ooc_others('(X) {} [{}] turned the lights {}.'
-                                          .format(initiator.displayname, initiator.id,
-                                                  status[new_lights]),
-                                          is_zstaff_flex=True, in_area=area if area else True)
+                initiator.send_ooc_others(msg3, is_zstaff_flex=True,
+                                          in_area=area if area else True)
             else: # Otherwise, send generic message
-                self.broadcast_ooc('The lights were turned {}.'.format(status[new_lights]))
+                self.broadcast_ooc(f'The lights were turned {status[new_lights]}.')
 
             # Notify the parties in the area that the lights have changed
             for party in self.parties:
                 party.check_lights()
 
-            for c in self.clients:
-                found_something = c.area_changer.notify_me_rp(self, changed_visibility=True,
-                                                              changed_hearing=False)
+            for player in self.clients:
+                found_something = player.area_changer.notify_me_rp(self, changed_visibility=True,
+                                                                   changed_hearing=False)
                 if found_something and new_lights:
-                    c.send_ic_attention()
+                    player.send_ic_attention()
 
         def set_next_msg_delay(self, msg_length: int):
             """
@@ -722,7 +742,7 @@ class AreaManager:
             except ServerError.MusicNotFoundError:
                 if raise_if_not_found:
                     raise
-                name, length, source = name, -1, ''
+                length, source = -1, ''
 
             if 'name' not in pargs:
                 pargs['name'] = name
@@ -746,8 +766,8 @@ class AreaManager:
                 if self.music_looper:
                     self.music_looper.cancel()
                 if length > 0:
-                    f = lambda: loop(-1) # Server should loop now
-                    self.music_looper = asyncio.get_event_loop().call_later(length, f)
+                    server_loop_fn = lambda: loop(-1) # Server should loop now
+                    self.music_looper = asyncio.get_event_loop().call_later(length, server_loop_fn)
             loop(pargs['char_id'])
 
             # Record the character name and the track they played.
@@ -755,15 +775,15 @@ class AreaManager:
             self.current_music = name
             self.current_music_source = source
 
-            logger.log_server('[{}][{}]Changed music to {}.'
-                              .format(self.id, client.get_char_name(), name), client)
+            msg = f'[{self.id}][{client.get_char_name()}]Changed music to {name}.'
+            logger.log_server(msg, client)
 
             # Changing music reveals sneaked players, so do that if requested
             if not client.is_staff() and not client.is_visible and reveal_sneaked:
                 client.change_visibility(True)
-                client.send_ooc_others('(X) {} [{}] revealed themselves by playing music ({}).'
-                                       .format(client.displayname, client.id, client.area.id),
-                                       is_zstaff=True)
+                msg = (f'(X) {client.displayname} [{client.id}] revealed themselves by playing '
+                       f'music ({client.area.id}).')
+                client.send_ooc_others(msg, is_zstaff=True)
 
         def play_music(self, name: str, char_id: int, length: int = -1, showname: str = ''):
             """
@@ -789,8 +809,8 @@ class AreaManager:
             if self.music_looper:
                 self.music_looper.cancel()
             if length > 0:
-                f = lambda: self.play_music(name, -1, length)
-                self.music_looper = asyncio.get_event_loop().call_later(length, f)
+                loop_again_fn = lambda: self.play_music(name, -1, length)
+                self.music_looper = asyncio.get_event_loop().call_later(length, loop_again_fn)
 
         def add_to_shoutlog(self, client: ClientManager.Client, msg: str):
             """
@@ -807,8 +827,8 @@ class AreaManager:
             if len(self.shoutlog) >= 20:
                 self.shoutlog = self.shoutlog[1:]
 
-            info = '{} | [{}] {} ({}) {}'.format(Constants.get_time(), client.id,
-                                                 client.displayname, client.get_ip(), msg)
+            info = (f'{Constants.get_time()} | [{client.id}] {client.displayname} '
+                    f'({client.get_ip()}) {msg}')
             self.shoutlog.append(info)
 
         def add_party(self, party: PartyManager.Party):
@@ -827,8 +847,8 @@ class AreaManager:
             """
 
             if party in self.parties:
-                raise AreaError('Party {} is already part of the party list of this area.'
-                                .format(party.get_id()))
+                err = f'Party {party.get_id()} is already part of the party list of this area.'
+                raise AreaError(err)
             self.parties.add(party)
 
         def remove_party(self, party: PartyManager.Party):
@@ -847,21 +867,21 @@ class AreaManager:
             """
 
             if party not in self.parties:
-                raise AreaError('Party {} is not part of the party list of this area.'
-                                .format(party.get_id()))
+                err = f'Party {party.get_id()} is not part of the party list of this area.'
+                raise AreaError(err)
             self.parties.remove(party)
 
         def get_shoutlog(self) -> str:
             """
             Get the shout log of the area.
             """
-            info = '== Shout log of {} ({}) =='.format(self.name, self.id)
+            info = f'== Shout log of {self.name} ({self.id}) =='
 
             if not self.shoutlog:
                 info += '\r\nNo shouts have been performed since the area was loaded.'
             else:
                 for log in self.shoutlog:
-                    info += '\r\n*{}'.format(log)
+                    info += f'\r\n*{log}'
             return info
 
         def change_status(self, value: str):
@@ -882,8 +902,9 @@ class AreaManager:
             allowed_values = ['idle', 'building-open', 'building-full', 'casing-open',
                               'casing-full', 'recess']
             if value.lower() not in allowed_values:
-                raise AreaError('Invalid status. Possible values: {}'
-                                .format(', '.join(allowed_values)))
+                err = (f'Invalid status. Possible values: '
+                       f'{", ".join(allowed_values)}')
+                raise AreaError(err)
             self.status = value.upper()
 
         def get_clock_creator(self) -> ClientManager.Client:
@@ -1014,7 +1035,7 @@ class AreaManager:
             The string follows the convention 'A::AreaID:AreaName:ClientsInArea'
             """
 
-            return 'A::{}:{}:{}'.format(self.id, self.name, len(self.clients))
+            return f'A::{self.id}:{self.name}:{len(self.clients)}'
 
     def __init__(self, server: TsuserverDR):
         """
@@ -1231,23 +1252,60 @@ class AreaManager:
     def change_passage_lock(self, client: ClientManager.Client,
                             areas: List[AreaManager.Area],
                             bilock: bool = False,
-                            change_passage_visibility: bool = False):
+                            change_passage_visibility: bool = False) -> List[bool]:
+        """
+        Attempt to change the passage lock between areas from the perspective of the client.
+        If bilock is True, it will attempt to change the passage lock between areas[0] and areas[1].
+        Otherwise, it will attempt to change the passage lock from area[0] to area[1].
+
+        An attempt will fail if player is non-staff and either of the following is true
+        * They try to change passages to areas that do not allow their passages to be modified.
+        * They try to create passages they cannot see
+
+        Parameters
+        ----------
+        client : ClientManager.Client
+            Player whose authority will be used to change the passage
+        areas : List[AreaManager.Area]
+            Areas to change passages between or from/to. Must be a list of two elements
+        bilock : bool, optional
+            True if the passage lock should change in both directions, false if only from areas[0]
+            to areas[1]. By default False
+        change_passage_visibility : bool, optional
+            True if the passage whose locks are changed should also change their current visibility.
+            By default False
+
+        Returns
+        -------
+        List[bool]
+            List of 1 element if bilock is false, or 2 if bilock is true. For each index i in the
+            list, it is the case that its value is true if and only the passage between areas[i] and
+            areas[1-i] (now) exists.
+
+        Raises
+        ------
+        AreaError
+            If the player is not authorized to change the requested passages.
+        """
+
         now_reachable = []
         num_areas = 2 if bilock else 1
 
         # First check if the player should be able to change the passage at all
-        for i in range(num_areas):
-            # First check if it is the case a non-authorized use is trying to change passages to
-            # areas that do not allow their passages to be modified
-            if not areas[i].change_reachability_allowed and not client.is_staff():
-                raise AreaError('You must be authorized to change passages in area {}.'
-                                .format(areas[i].name))
+        if not client.is_staff():
+            for i in range(num_areas):
+                # First check if it is the case a non-authorized player is trying to change
+                # passages to areas that do not allow their passages to be modified
+                if not areas[i].change_reachability_allowed:
+                    err = (f'You must be authorized to change passages in area {areas[i].name}.')
+                    raise AreaError(err)
 
-            # And make sure that non-authorized users cannot create passages they cannot see
-            if ((not areas[1-i].name in areas[i].reachable_areas) and
-                not (client.is_staff() or areas[1-i].name in areas[i].visible_areas)):
-                raise AreaError('You must be authorized to create a new passage from {} to '
-                                '{}.'.format(areas[i].name, areas[1-i].name))
+                # And make sure that non-authorized users cannot create passages they cannot see
+                if (areas[1-i].name not in areas[i].reachable_areas
+                    and areas[1-i].name not in areas[i].visible_areas):
+                    err = (f'You must be authorized to create a new passage from '
+                        f'{areas[i].name} to {areas[1-i].name}.')
+                    raise AreaError(err)
 
         # If we are at this point, we are committed to changing the passage locks
         for i in range(num_areas):
