@@ -2103,7 +2103,7 @@ def ooc_cmd_files_area(client: ClientManager.Client, arg: str):
     None
 
     EXAMPLES
-    /files_area 1           :: May return something like this:
+    /files_area           :: May return something like this:
     $H: (X) === Players in area Basement who have set their files ===
     [1] Phantom (Spam_HD): hhh
     [0] Eggs_HD: Hi
@@ -9863,3 +9863,20 @@ def ooc_cmd_map_list(client: ClientManager.Client, arg: str):
             client.send_ooc(output)
     except ServerError.FileNotFoundError:
         raise ClientError('Server file area_lists.yaml not found.')
+
+
+def ooc_cmd_bg_info(client: ClientManager.Client, arg: str):
+    Constants.assert_command(client, arg, parameters='=0')
+
+    msg = ''
+    if client.is_blind:
+        if not client.is_staff():
+            raise ClientError('You are blind, so you cannot see anything.')
+        msg = '(X) '
+    if not client.area.lights:
+        if not client.is_staff():
+            raise ClientError('The lights are off, so you cannot see anything.')
+        msg = '(X) '
+
+    msg += f'The current background is {client.area.background}.'
+    client.send_ooc(msg)

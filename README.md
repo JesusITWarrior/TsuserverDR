@@ -105,6 +105,8 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Messages will not be sent if sneaking. Altered messages will be sent if the area's lights are turned off.
 * **bg** "background"
     - Changes the current background.
+* **bg_info**
+    - Displays the name of the current background.
 * **bilock** "area number/name"
     - Changes the passage status (locked/unlocked) between the current area and the given area.
 * **bloodtrail_clean**

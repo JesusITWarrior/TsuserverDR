@@ -697,3 +697,4 @@
 * Renamed all external references to the concept of "Area List". They are now called maps. As a result
   - Commands that previously said "Area List" now say "Map" (e.g. /getareas)
   - Renamed /area_list and /area_lists to /map and /map_list (old names still valid but marked for removal)
+* Added /bg_info, which gives the name of the current background (provided you are GM+, or the lights are on and you are not blind)
