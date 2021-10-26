@@ -1303,7 +1303,7 @@ class _Trial(GameWithAreas):
         Parameters
         ----------
         area_manager : AreaManager
-            AreaManager that signaled the area list load.
+            AreaManager that signaled the map load.
 
         Returns
         -------
@@ -1312,9 +1312,9 @@ class _Trial(GameWithAreas):
         """
 
         for nonplayer in self.get_nonleader_users_in_areas():
-            nonplayer.send_ooc('The trial you were watching was deleted due to an area list load.')
+            nonplayer.send_ooc('The trial you were watching was deleted due to a map load.')
         for player in self.get_players():
-            player.send_ooc('Your trial was deleted due to an area list load.')
+            player.send_ooc('Your trial was deleted due to a map load.')
 
         self.destroy()
 

@@ -101,8 +101,25 @@ def ooc_cmd_zone_delete(client, arg):
 
     """
 
-    do_command('zone_end', client, arg)
+    do_command_deprecated('zone_end', client, arg)
 
+
+def ooc_cmd_area_list(client, arg):
+    """
+    Old name for /map_load
+
+    """
+
+    do_command_deprecated('map_load', client, arg)
+
+
+def ooc_cmd_area_lists(client, arg):
+    """
+    Old name for /map_list
+
+    """
+
+    do_command_deprecated('map_list', client, arg)
 
 
 def ooc_cmd_pw(client, arg):

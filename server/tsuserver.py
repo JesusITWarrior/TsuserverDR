@@ -68,8 +68,8 @@ class TsuserverDR:
         self.release = 4
         self.major_version = 3
         self.minor_version = 1
-        self.segment_version = 'a6'
-        self.internal_version = 'm211025c'
+        self.segment_version = 'a7'
+        self.internal_version = 'm211025d'
         version_string = self.get_version_string()
         self.software = 'TsuserverDR {}'.format(version_string)
         self.version = 'TsuserverDR {} ({})'.format(version_string, self.internal_version)
@@ -92,7 +92,7 @@ class TsuserverDR:
         self.loop = None
         self.last_error = None
         self.allowed_iniswaps = None
-        self.area_list = None
+        self.area_list = None  # TODO: Remove lingering references to area_list so they now say map
         self.old_area_list = None
         self.default_area = 0
         self.all_passwords = list()
@@ -637,7 +637,7 @@ class TsuserverDR:
     def prepare_area_list(self, c: ClientManager.Client = None,
                           from_area: AreaManager.Area = None) -> List[str]:
         """
-        Return the area list of the server. If given c and from_area, it will send an area list
+        Return the map of the server. If given c and from_area, it will send a map
         that matches the perspective of client `c` as if they were in area `from_area`.
 
         Parameters
@@ -650,7 +650,7 @@ class TsuserverDR:
         Returns
         -------
         list of str
-            Area list that matches intended perspective.
+            Map that matches intended perspective.
         """
 
         # Determine whether to filter the areas in the results

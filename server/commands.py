@@ -185,108 +185,6 @@ def ooc_cmd_area_kick(client: ClientManager.Client, arg: str):
                     member.send_ooc('{} was area kicked off your party.'.format(current_char))
 
 
-def ooc_cmd_area_list(client: ClientManager.Client, arg: str):
-    """ (OFFICER ONLY)
-    Sets the server's current area list (what areas exist at any given time). If given no arguments,
-    it will return the area list to its original value (in areas.yaml). The list of area lists can
-    be accessed with /area_lists. Clients that do not process 'SM' packets can be in servers that
-    use this command without crashing, but they will continue to only see the areas they could see
-    when joining.
-    Returns an error if the given area list was not found.
-
-    SYNTAX
-    /area_list <area_list>
-
-    PARAMETERS
-    <area_list>: Name of the intended area list
-
-    EXAMPLES
-    /area_list dr1dr2       :: Load the "dr1dr2" area list.
-    /area_list              :: Reset the area list to its original value.
-    """
-
-    Constants.assert_command(client, arg, is_officer=True)
-
-    # lists which areas are locked before the reload
-    old_locked_areas = [area.name for area in client.server.area_manager.areas if area.is_locked]
-
-    if not arg:
-        client.server.area_manager.load_areas()
-        client.send_ooc('You have restored the original area list of the server.')
-        client.send_ooc_others('The original area list of the server has been restored.',
-                               is_officer=False)
-        client.send_ooc_others('{} [{}] has restored the original area list of the server.'
-                               .format(client.name, client.id), is_officer=True)
-    else:
-        try:
-            new_area_file = 'config/area_lists/{}.yaml'.format(arg)
-            client.server.area_manager.load_areas(area_list_file=new_area_file)
-        except ServerError.FileNotFoundError:
-            raise ArgumentError('Could not find the area list file `{}`.'.format(new_area_file))
-        except ServerError.FileOSError as exc:
-            raise ArgumentError('Unable to open area list file `{}`: `{}`.'
-                                .format(new_area_file, exc.message))
-        except AreaError as exc:
-            raise ArgumentError('The area list {} returned the following error when loading: `{}`.'
-                                .format(new_area_file, exc))
-
-        client.send_ooc('You have loaded the area list {}.'.format(arg))
-        client.send_ooc_others('The area list {} has been loaded.'.format(arg), is_officer=False)
-        client.send_ooc_others('{} [{}] has loaded the area list {}.'
-                               .format(client.name, client.id, arg),
-                               is_officer=True)
-
-    # Every area that was locked before the reload gets warned that their areas were unlocked.
-    for area_name in old_locked_areas:
-        try:
-            area = client.server.area_manager.get_area_by_name(area_name)
-            area.broadcast_ooc('This area became unlocked after the area reload. Relock it using '
-                               '/lock.')
-        # if no area is found with that name, then an old locked area does not exist anymore, so
-        # we do not need to do anything.
-        except AreaError:
-            pass
-
-    # Every area that was locked before the reload gets warned that their areas were unlocked.
-    for area_name in old_locked_areas:
-        try:
-            area = client.server.area_manager.get_area_by_name(area_name)
-            area.broadcast_ooc('This area became unlocked after the area reload. Relock it using '
-                               '/lock.')
-        # if no area is found with that name, then an old locked area does not exist anymore, so
-        # we do not need to do anything.
-        except AreaError:
-            pass
-
-
-def ooc_cmd_area_lists(client: ClientManager.Client, arg: str):
-    """ (OFFICER ONLY)
-    Lists all available area lists as established in config/area_lists.yaml. Note that, as this
-    file is updated independently from the other area lists, an area list does not need to be in
-    this file in order to be usable, and an area list in this list may no longer exist.
-
-    SYNTAX
-    /area_lists
-
-    PARAMETERS
-    None
-
-    EXAMPLES
-    /area_lists             :: Return all available area lists
-    """
-
-    Constants.assert_command(client, arg, is_officer=True, parameters='=0')
-
-    try:
-        with Constants.fopen('config/area_lists.yaml', 'r', encoding='utf-8') as f:
-            output = 'Available area lists:\n'
-            for line in f:
-                output += '*{}'.format(line)
-            client.send_ooc(output)
-    except ServerError.FileNotFoundError:
-        raise ClientError('Server file area_lists.yaml not found.')
-
-
 def ooc_cmd_autopass(client: ClientManager.Client, arg: str):
     """
     Toggles enter/leave messages being sent automatically or not to users in the current area.
@@ -548,8 +446,8 @@ def ooc_cmd_bilock(client: ClientManager.Client, arg: str):
 
 def ooc_cmd_bilockh(client: ClientManager.Client, arg: str):
     """ (STAFF ONLY)
-    Similar to /bilock. However, passages that are locked in this way are hidden from area lists
-    and /minimap; and passages that are unlocked are revealed in area lists and /minimap.
+    Similar to /bilock. However, passages that are locked in this way are hidden from maps
+    and /minimap; and passages that are unlocked are revealed in maps and /minimap.
 
     SYNTAX
     /bilockh <target_area>
@@ -3462,7 +3360,7 @@ def ooc_cmd_logout(client: ClientManager.Client, arg: str):
 
 def ooc_cmd_look(client: ClientManager.Client, arg: str):
     """
-    Obtain the current area's description, which is either the description in the area list
+    Obtain the current area's description, which is either the description in the map
     configuration, or a customized one defined via /look_set. If the area has no set description,
     it will return the server's default description stored in the default_area_description server
     parameter. If the area has its lights turned off, it will send a generic 'cannot see anything'
@@ -6533,7 +6431,7 @@ def ooc_cmd_showname_areas(client: ClientManager.Client, arg: str):
     EXAMPLE
     /showname_areas          :: May list something like this
 
-    == Area List ==
+    == Map ==
     == Area 0: Basement ==
     [0] Phantom_HD
     [1] Spam_HD (Spam, Spam, Spam...)
@@ -8385,8 +8283,8 @@ def ooc_cmd_unilock(client: ClientManager.Client, arg: str):
 
 def ooc_cmd_unilockh(client: ClientManager.Client, arg: str):
     """ (STAFF ONLY)
-    Similar to /unilock. However, passages that are locked in this way are hidden from area lists
-    and /minimap; and passages that are unlocked are revealed in area lists and /minimap.
+    Similar to /unilock. However, passages that are locked in this way are hidden from maps
+    and /minimap; and passages that are unlocked are revealed in maps and /minimap.
 
     SYNTAX
     /unilock <target_area>
@@ -9268,7 +9166,7 @@ def ooc_cmd_zone_info(client: ClientManager.Client, arg: str):
     /zone_info      :: May return something like
     $H: == Zone z0 ==
     Zone z0. Contains areas: 4-7. Is watched by: [0] Phantom (4) and [1] Spam (5).
-    $H: == Zone Area List ==
+    $H: == Zone Map ==
     == Area 4: Test 1 ==
     [0] Phantom_HD (123456789)
     == Area 5: Test 2 ==
@@ -9864,3 +9762,104 @@ def ooc_cmd_exec(client: ClientManager.Client, arg: str):
                 pass
     globals().pop('client', None)  # Don't really want "client" to be a global variable
     return 1  # Indication that /exec is live
+
+
+def ooc_cmd_map(client: ClientManager.Client, arg: str):
+    """ (OFFICER ONLY)
+    Sets the server's current map (what areas exist at any given time). If given no arguments,
+    it will return the map to its original value (in areas.yaml). The list of maps can
+    be accessed with /map_list. Clients that do not process 'SM' packets can be in servers that
+    use this command without crashing, but they will continue to only see the areas they could see
+    when joining.
+    Returns an error if the given map was not found.
+
+    SYNTAX
+    /map <map>
+
+    PARAMETERS
+    <map>: Name of the intended map
+
+    EXAMPLES
+    /map dr1dr2       :: Load the "dr1dr2" map.
+    /map              :: Reset the map to its original value.
+    """
+
+    Constants.assert_command(client, arg, is_officer=True)
+
+    # lists which areas are locked before the reload
+    old_locked_areas = [area.name for area in client.server.area_manager.areas if area.is_locked]
+
+    if not arg:
+        client.server.area_manager.load_areas()
+        client.send_ooc('You have restored the original map of the server.')
+        client.send_ooc_others('The original map of the server has been restored.',
+                               is_officer=False)
+        client.send_ooc_others(f'{client.name} [{client.id}] has restored the original map of the '
+                               f'server.', is_officer=True)
+    else:
+        try:
+            new_map_file = f'config/area_lists/{arg}.yaml'
+            client.server.area_manager.load_areas(area_list_file=new_map_file)
+        except ServerError.FileNotFoundError:
+            raise ArgumentError(f'Could not find the map file `{new_map_file}`.')
+        except ServerError.FileOSError as exc:
+            raise ArgumentError(f'Unable to open map file `{new_map_file}`: `{exc.message}`.')
+        except AreaError as exc:
+            raise ArgumentError(f'The map {new_map_file} returned the following error when '
+                                f'loading: `{exc}`.')
+
+        client.send_ooc(f'You have loaded the map {arg}.')
+        client.send_ooc_others(f'The map {arg} has been loaded.',
+                               is_officer=False)
+        client.send_ooc_others(f'{client.name} [{client.id}] has loaded the map {arg}.',
+                               is_officer=True)
+
+    # Every area that was locked before the reload gets warned that their areas were unlocked.
+    for area_name in old_locked_areas:
+        try:
+            area = client.server.area_manager.get_area_by_name(area_name)
+            area.broadcast_ooc('This area became unlocked after the map reload. Relock it using '
+                               '/lock.')
+        # if no area is found with that name, then an old locked area does not exist anymore, so
+        # we do not need to do anything.
+        except AreaError:
+            pass
+
+    # Every area that was locked before the reload gets warned that their areas were unlocked.
+    for area_name in old_locked_areas:
+        try:
+            area = client.server.area_manager.get_area_by_name(area_name)
+            area.broadcast_ooc('This area became unlocked after the map reload. Relock it using '
+                               '/lock.')
+        # if no area is found with that name, then an old locked area does not exist anymore, so
+        # we do not need to do anything.
+        except AreaError:
+            pass
+
+
+def ooc_cmd_map_list(client: ClientManager.Client, arg: str):
+    """ (OFFICER ONLY)
+    Lists all available maps as established in config/area_lists.yaml. Note that, as this
+    file is updated independently from the other maps, a map does not need to be in
+    this file in order to be usable, and a map in this list may no longer exist.
+
+    SYNTAX
+    /map_list
+
+    PARAMETERS
+    None
+
+    EXAMPLES
+    /map_list             :: Return all available maps
+    """
+
+    Constants.assert_command(client, arg, is_officer=True, parameters='=0')
+
+    try:
+        with Constants.fopen('config/area_lists.yaml', 'r', encoding='utf-8') as f:
+            output = 'Available maps:\n'
+            for line in f:
+                output += '*{}'.format(line)
+            client.send_ooc(output)
+    except ServerError.FileNotFoundError:
+        raise ClientError('Server file area_lists.yaml not found.')

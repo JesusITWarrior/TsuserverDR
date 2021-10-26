@@ -93,7 +93,7 @@ class TestClientConnection(_Unittest):
         c.assert_packet('MM', 1)  # ?????
         c.assert_packet('OPPASS', None)
         c.assert_packet('DONE', tuple())
-        c.assert_packet('CT', (None, None))  # Area list
+        c.assert_packet('CT', (None, None))  # Map
         c.assert_packet('CT', (None, None))  # MOTD
         c.assert_packet('FM', None, over=True)  # Music list, again
 
@@ -140,7 +140,7 @@ class TestClientConnection(_Unittest):
         c.assert_packet('MM', 1)  # ?????
         c.assert_packet('OPPASS', None)
         c.assert_packet('DONE', tuple())
-        c.assert_packet('CT', (None, None))  # Area list
+        c.assert_packet('CT', (None, None))  # Map
         c.assert_packet('CT', (None, None))  # MOTD
         c.assert_packet('FM', None, over=True)  # Music list, again
 
@@ -195,7 +195,7 @@ class TestClientConnection(_Unittest):
         c.assert_packet('MM', 1)  # ?????
         c.assert_packet('OPPASS', None)
         c.assert_packet('DONE', tuple())
-        c.assert_packet('CT', (None, None))  # Area list
+        c.assert_packet('CT', (None, None))  # Map
         c.assert_packet('CT', (None, None))  # MOTD
         c.assert_packet('FM', None, over=True)  # Music list, again
 

@@ -330,13 +330,13 @@ GMs can:
 * **bloodtrail_smear** "area 1", "area 2", ...
     - Smears the blood trails in the given areas (or the current one if not given any areas).
 * **can_passagelock**
-    - Changes the current area's setting to allow non-staff members to change passages starting in the area with /bilock or /unilock. By default area setting is indicated in the server's area list.
+    - Changes the current area's setting to allow non-staff members to change passages starting in the area with /bilock or /unilock. By default area setting is indicated in the server's map.
 * **can_rollp**
-    - Changes the current area's setting to allow non-staff members to do /rollp. By default area setting is indicated in the server's area list.
+    - Changes the current area's setting to allow non-staff members to do /rollp. By default area setting is indicated in the server's map.
 * **can_rpgetarea**
-    - Changes the current area's setting to allow RP users to use /getarea. By default area setting is indicated in the server's area list.
+    - Changes the current area's setting to allow RP users to use /getarea. By default area setting is indicated in the server's map.
 * **can_rpgetareas**
-    - Changes the current area's setting to allow RP users to use /getareas. By default area setting is indicated in the server's area list.
+    - Changes the current area's setting to allow RP users to use /getareas. By default area setting is indicated in the server's map.
 * **char_restrict** "character name"
     - Changes the restricted status of a character in the current area.
     - If a character is restricted, only GMs and above can use the character in the current area.
@@ -596,11 +596,6 @@ GMs can:
 * **area_kick** "ID/IPID" "area number"
     - Kicks target from your area to the intended area and remove them from its invite-list.
     - If not given a target area, it will use the server's default area (usually area 0).
-* **area_list** "area list"
-    - Sets the server's current area list.
-    - If not given an area list, it will restore the original area list as it was on server bootup.
-* **area_lists**
-    - Lists all available area lists as established in `config/area_lists.yaml`.
 * **blockdj** "ID/IPID"
     - Mutes the target from changing music.
 * **charlog** "ID/IPID"
@@ -626,6 +621,11 @@ GMs can:
     - Kicks the target from the server.
 * **make_gm** "ID"
     - Makes the target a GM.
+* **map** "map"
+    - Sets the server's current map.
+    - If not given a map, it will restore the original map as it was on server bootup.
+* **map_list**
+    - Lists all available maps as established in `config/area_lists.yaml`.
 * **multiclients** "ID/IPID"
     - Lists all the clients opened by a target and the areas they are in.
 * **mute** "ID/IPID"
@@ -740,6 +740,7 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **timer_cancel**: Same as /timer_end. (D) (Deprecated July 5, 2021)
 * **fa**: Same as /files_area.
 * **l**: Same as /look.
+* **party_members**: Same as /party_info. (D) (Deprecated October 25, 2021)
 
 #### GM+
 
@@ -749,6 +750,8 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **clock_cancel**: Same as /clock_end. (D) (Deprecated July 5, 2021)
 * **lurk_cancel**: Same as /lurk_end. (D) (Deprecated July 5, 2021)
 * **zone_delete**: Same as /zone_end. (D) (Deprecated July 5, 2021)
+* **area_list**: Same as /map. (D) (Deprecated October 25, 2021)
+* **area_lists**: Same as /map_list. (D) (Deprecated October 25, 2021)
 
 ### Notes
 

@@ -1090,7 +1090,7 @@ class NonStopDebate(TrialMinigame):
         Parameters
         ----------
         area_manager : AreaManager
-            AreaManager that signaled the area list load.
+            AreaManager that signaled the map load.
 
         Returns
         -------
@@ -1102,7 +1102,7 @@ class NonStopDebate(TrialMinigame):
             nonplayer.send_ooc('The nonstop debate you were watching was deleted due to an area '
                                'list load.')
         for player in self.get_players():
-            player.send_ooc('Your nonstop debate was deleted due to an area list load.')
+            player.send_ooc('Your nonstop debate was deleted due to a map load.')
 
         self.destroy()
 

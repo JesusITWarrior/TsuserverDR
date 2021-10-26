@@ -49,7 +49,7 @@ if typing.TYPE_CHECKING:
 class AreaManager:
     """
     Create a new manager for the areas in a server.
-    Contains the Area object definition, as well as the server's area list.
+    Contains the Area object definition, as well as the server's map.
     """
 
     class Area:
@@ -66,7 +66,7 @@ class AreaManager:
             server: server.TsuserverDR
                 The server this area belongs to.
             parameters: dict
-                Area parameters as specified in the loaded area list.
+                Area parameters as specified in the loaded map.
             """
 
             self._clients = set()
@@ -186,7 +186,7 @@ class AreaManager:
             Raises
             ------
             KeyError
-                If the client is not in the area list.
+                If the client is not in the list of players in the area.
             """
 
             try:
@@ -1055,12 +1055,12 @@ class AreaManager:
 
     def load_areas(self, area_list_file: str = 'config/areas.yaml'):
         """
-        Load an area list.
+        Load a map.
 
         Parameters
         ----------
         area_list_file: str, optional
-            Location of the area list to load. Defaults to 'config/areas.yaml'.
+            Location of the map to load. Defaults to 'config/areas.yaml'.
 
         Raises
         ------
@@ -1073,7 +1073,7 @@ class AreaManager:
             * An area has a passage to an undefined area.
 
         FileNotFound
-            If the area list could not be found.
+            If the map could not be found.
         """
 
         areas = ValidateAreas().validate(area_list_file, extra_parameters={
@@ -1091,14 +1091,13 @@ class AreaManager:
         self.area_names = [area.name for area in self.areas]
 
         # Only once all areas have been created, actually set the corresponding values
-        # Helps avoiding junk area lists if there was an error
+        # Helps avoiding junk maps if there was an error
         # But first, remove all zones
         backup_zones = self.server.zone_manager.get_zones()
         for (zone_id, zone) in backup_zones.items():
             self.server.zone_manager.delete_zone(zone_id)
             for client in zone.get_watchers():
-                client.send_ooc('Your zone has been automatically deleted due to an area list '
-                                'load.')
+                client.send_ooc('Your zone has been automatically deleted due to a map load.')
 
         # And end all existing day cycles
         for client in self.server.get_clients():
@@ -1110,11 +1109,11 @@ class AreaManager:
         # And remove all global IC and global IC prefixes
         for client in self.server.get_clients():
             if client.multi_ic:
-                client.send_ooc('Due to an area list reload, your global IC was turned off. You '
+                client.send_ooc('Due to a map load, your global IC was turned off. You '
                                 'may turn it on again manually.')
                 client.multi_ic = None
             if client.multi_ic_pre:
-                client.send_ooc('Due to an area list reload, your global IC prefix was removed. '
+                client.send_ooc('Due to a map load, your global IC prefix was removed. '
                                 'You may set it again manually.')
                 client.multi_ic_pre = ''
 
@@ -1147,12 +1146,11 @@ class AreaManager:
                         new_char_id = -1
 
                 if remains:
-                    message = 'Area list reload. Moving you to the new {}.'
+                    message = f'Map reload. Moving you to the new {new_area.name}.'
                 else:
-                    message = ('Area list reload. Your previous area no longer exists. Moving you '
-                               'to the server default area {}.')
-
-                client.send_ooc(message.format(new_area.name))
+                    message = (f'Map reload. Your previous area no longer exists. Moving you '
+                               f'to the server default area {new_area.name}.')
+                client.send_ooc(message)
                 client.change_area(new_area, ignore_checks=True, change_to=new_char_id,
                                    ignore_notifications=True)
 
@@ -1166,7 +1164,7 @@ class AreaManager:
         for area in old_areas:
             area.destroy()
 
-        # Update the server's area list only once everything is successful
+        # Update the server's map only once everything is successful
         self.server.old_area_list = self.server.area_list
         self.server.area_list = area_list_file
 

@@ -145,7 +145,7 @@ class ZoneManager:
 
         def is_area(self, area: AreaManager.Area) -> bool:
             """
-            Return True if the area is part of the zone's area list, False otherwise.
+            Return True if the area is part of the zone's map, False otherwise.
 
             Parameters
             ----------
@@ -155,7 +155,7 @@ class ZoneManager:
             Returns
             -------
             bool
-                True if the area is part of the zone's area list, False otherwise.
+                True if the area is part of the zone's map, False otherwise.
             """
 
             return area in self._areas

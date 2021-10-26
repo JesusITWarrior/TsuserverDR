@@ -40,7 +40,7 @@ class _Unittest(unittest.TestCase):
             cls.skipTest('', reason='')
         print('\nTesting {}: '.format(cls.__name__), end=' ')
         cls.server = _TestTsuserverDR()
-        cls.clients: List[_TestClientManager._Testclient] = cls.server.client_list
+        cls.clients: List[_TestClientManager._TestClient] = cls.server.client_list
         cls.area0: AreaManager.Area = cls.server.area_manager.get_area_by_id(0)
         cls.area1: AreaManager.Area = cls.server.area_manager.get_area_by_id(1)
         cls.area2: AreaManager.Area = cls.server.area_manager.get_area_by_id(2)
@@ -776,7 +776,7 @@ class _TestClientManager(ClientManager):
             elif command_type == 'SC':  # Character list
                 # TODO: RC!!!
                 pass
-            elif command_type == 'SM':  # First timer music/area list
+            elif command_type == 'SM':  # First timer music/map
                 pass
             elif command_type == 'CharsCheck':  # Available characters
                 pass
@@ -794,7 +794,7 @@ class _TestClientManager(ClientManager):
                 pass
             elif command_type == 'CT':  # OOC message
                 self.received_ooc.append((args[0], args[1]))
-            elif command_type == 'FM':  # Updated music/area list
+            elif command_type == 'FM':  # Updated music/amap
                 pass
             elif command_type == 'PV':  # Current character
                 pass

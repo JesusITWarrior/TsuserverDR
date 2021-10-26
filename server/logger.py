@@ -110,8 +110,8 @@ def log_error(msg, server, errortype='P') -> str:
         # Add list of areas to error log
         try:
             msg += '\n\n\n= Area dump ='
-            msg += '\n*Current area list: {}'.format(server.area_list)
-            msg += '\n*Old area list: {}'.format(server.old_area_list)
+            msg += '\n*Current map: {}'.format(server.area_list)
+            msg += '\n*Old map: {}'.format(server.old_area_list)
             msg += '\n*Current areas:'
 
             for area in server.area_manager.areas:

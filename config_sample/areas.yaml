@@ -1,5 +1,5 @@
-# A sample area list document
-# Each item in an area list is an area. Areas have parameters you may tweak, and will be used when loading the area list.
+# A sample map document
+# Each item in an map is an area. Areas have parameters you may tweak, and will be used when loading the map.
 # Start each area item with a - (and only the area item, for every other parameter use spaces)
 # List each key: value pair in a new line. If you wish to use a default value for a key, do not include the key in the area item.
 # Yes, this has a lot of introductory text. This is because areas have lots of parameters that can be tweaked.
@@ -35,7 +35,7 @@
 # *song_switch_allowed: If false, only GM+ can do /play. If true, no such restriction is imposed.
 
 # --------
-# Mandatory parameters (the area list will not load if a section does not contain the following)
+# Mandatory parameters (the map will not load if a section does not contain the following)
 # --------
 # area
 # background

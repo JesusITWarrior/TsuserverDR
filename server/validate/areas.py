@@ -84,9 +84,9 @@ class ValidateAreas(Validate):
 
             for name in reserved_names:
                 if item['area'] == name:
-                    info = ('An area in your area list is called "{name}". This is a reserved '
-                            'name, so it is not a valid area name. Please change its name and try '
-                            'again.')
+                    info = (f'An area in your map is called "{name}". This is a reserved '
+                            f'name, so it is not a valid area name. Please change its name and try '
+                            f'again.')
                     raise AreaError(info)
 
             # Prevent names that may be interpreted as a directory with . or ..
@@ -108,12 +108,12 @@ class ValidateAreas(Validate):
                 info = ('The sound_proof property was defined for area {}. '
                         'Support for sound_proof was removed in favor of scream_range. '
                         'Please replace the sound_proof tag with scream_range in '
-                        'your area list and try again.'.format(item['area']))
+                        'your map and try again.'.format(item['area']))
                 raise AreaError(info)
 
             # Avoid having areas with the same name
             if item['area'] in temp_area_names:
-                info = ('Two areas have the same name in area list: {}. '
+                info = ('Two areas have the same name in the map: {}. '
                         'Please rename the duplicated areas and try again.'.format(item['area']))
                 raise AreaError(info)
 
@@ -121,7 +121,7 @@ class ValidateAreas(Validate):
             for parameter in item:
                 if item[parameter] is None:
                     info = ('Parameter {} is manually undefined for area {}. This can be the case '
-                            'due to having an empty parameter line in your area list. '
+                            'due to having an empty parameter line in your map. '
                             'Please fix or remove the parameter from the area definition and try '
                             'again.'.format(parameter, item['area']))
                     raise AreaError(info)

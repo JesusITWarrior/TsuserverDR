@@ -859,7 +859,7 @@ class ClientManager:
                     })
             else:
                 # KFO and AO2.8.4 deals with music lists differently than other clients
-                # They want the area lists and music lists separate, so they will have it like that
+                # They want the maps and music lists separate, so they will have it like that
                 area_list = self.server.build_music_list(from_area=self.area, c=self,
                                                          include_areas=True,
                                                          include_music=False)
@@ -1393,9 +1393,9 @@ class ClientManager:
             if info == '':
                 info = '\r\n*No players were found in the area range.'
             if area_id == -1:
-                info = '== Area List ==' + info
+                info = '== Map ==' + info
             elif area_id == -2:
-                info = '== Zone Area List ==' + info
+                info = '== Zone Map ==' + info
             self.send_ooc(info)
 
         def prepare_area_info(self, current_area: AreaManager.Area, area_id: int,
@@ -1446,7 +1446,7 @@ class ClientManager:
                                        or (area.name in current_area.visible_areas
                                            and area.name in current_area.reachable_areas)))
                     # Check reachable and visibly reachable to prevent gaining information from
-                    # areas that are visible from area list but are not reachable (e.g. normally
+                    # areas that are visible from the minimap but are not reachable (e.g. normally
                     # locked passages).
                     staff_check = ((self.is_staff() or as_mod) and area.clients)
                     nonstaff_check = (not self.is_staff() and norm_check)

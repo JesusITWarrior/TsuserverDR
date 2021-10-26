@@ -694,3 +694,6 @@
 ### (4.3.1)
 * Added `visible_areas` support to `areas.yaml`. If included in an area, it will set the areas visible to a player in the area. By default it is the same as the reachable areas
 * Renamed /party_members to /party_info (/party_members is still valid but marked for removal)
+* Renamed all external references to the concept of "Area List". They are now called maps. As a result
+  - Commands that previously said "Area List" now say "Map" (e.g. /getareas)
+  - Renamed /area_list and /area_lists to /map and /map_list (old names still valid but marked for removal)
