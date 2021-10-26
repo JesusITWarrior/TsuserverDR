@@ -1028,7 +1028,7 @@ class AOProtocol(asyncio.Protocol):
             return
 
         try:
-            self.client.command_change_showname(pargs['showname'], False)
+            self.client.command_change_showname(pargs['showname'])
         except ClientError as exc:
             self.client.send_ooc(exc)
 

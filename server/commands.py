@@ -6469,7 +6469,7 @@ def ooc_cmd_showname(client: ClientManager.Client, arg: str):
     /showname               :: Clears your showname
     """
 
-    client.command_change_showname(arg, True)
+    client.command_change_showname(arg)
 
 
 def ooc_cmd_showname_area(client: ClientManager.Client, arg: str):
