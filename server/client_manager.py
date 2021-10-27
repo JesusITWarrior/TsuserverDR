@@ -1300,7 +1300,7 @@ class ClientManager:
                     for client in [x for x in area.clients if x.is_cm]:
                         owner = f'MASTER: {client.get_char_name()}'
                         break
-                locked = area.is_gmlocked or area.is_modlocked or area.is_locked
+                locked = area.is_modlocked or area.is_locked
 
                 if self.is_staff():
                     n_clt = len([c for c in area.clients if c.char_id is not None])

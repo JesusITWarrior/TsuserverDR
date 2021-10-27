@@ -2483,36 +2483,6 @@ def ooc_cmd_gm(client: ClientManager.Client, arg: str):
                       .format(client.area.id, client.get_char_name(), arg), client)
 
 
-def ooc_cmd_gmlock(client: ClientManager.Client, arg: str):
-    """ (STAFF ONLY)
-    Sets the current area as accessible only to staff members. Players in the area at the time of
-    the lock will be able to leave and return to the area, regardless of authorization.
-    Requires /unlock to undo.
-    Returns an error if the area is already gm-locked or if the area is set to be unlockable.
-
-    SYNTAX
-    /gmlock
-
-    PARAMETERS
-    None
-
-    EXAMPLE
-    /gmlock             :: Sets the current area as accessible only to staff members.
-    """
-
-    Constants.assert_command(client, arg, is_staff=True, parameters='=0')
-
-    if not client.area.locking_allowed:
-        raise ClientError('Area locking is disabled in this area.')
-    if client.area.is_gmlocked:
-        raise ClientError('Area is already gm-locked.')
-
-    client.area.is_gmlocked = True
-    client.area.broadcast_ooc('Area gm-locked.')
-    for i in client.area.clients:
-        client.area.invite_list[i.ipid] = None
-
-
 def ooc_cmd_gmself(client: ClientManager.Client, arg: str):
     """ (STAFF ONLY):
     Makes all opened multiclients login as game master without them needing to put in a GM password.
@@ -2895,7 +2865,7 @@ def ooc_cmd_invite(client: ClientManager.Client, arg: str):
 
     Constants.assert_command(client, arg, parameters='>0')
 
-    if not client.area.is_locked and not client.area.is_modlocked and not client.area.is_gmlocked:
+    if not client.area.is_locked and not client.area.is_modlocked:
         raise ClientError('Area is not locked.')
 
     targets = list()  # Start with empty list
@@ -8302,7 +8272,7 @@ def ooc_cmd_uninvite(client: ClientManager.Client, arg: str):
 
     Constants.assert_command(client, arg, parameters='=1')
 
-    if not client.area.is_locked and not client.area.is_modlocked and not client.area.is_gmlocked:
+    if not client.area.is_locked and not client.area.is_modlocked:
         raise ClientError('Area is not locked.')
 
     targets = list()  # Start with empty list
@@ -8338,8 +8308,7 @@ def ooc_cmd_unlock(client: ClientManager.Client, arg: str):
     If the area is locked in some manner, attempt to perform exactly one of the following area
     unlocks in order.
     1. If player is a mod and the area is mod-locked, then mod-unlock.
-    2. If player is staff and the area is gm-locked, then gm-unlock.
-    3. If the area is not mod-locked nor gm-locked, then unlock.
+    2. If the area is not mod-locked, then unlock.
 
     Returns an error if the area was locked but the unlock could not be performed (would happen due
     to insufficient permissions).
@@ -8356,14 +8325,12 @@ def ooc_cmd_unlock(client: ClientManager.Client, arg: str):
 
     Constants.assert_command(client, arg, parameters='=0')
 
-    if not client.area.is_locked and not client.area.is_modlocked and not client.area.is_gmlocked:
+    if not client.area.is_locked and not client.area.is_modlocked:
         raise ClientError('Area is already open.')
 
     if client.is_mod and client.area.is_modlocked:
         client.area.modunlock()
-    elif client.is_staff() and not client.area.is_modlocked:
-        client.area.gmunlock()
-    elif not client.area.is_gmlocked and not client.area.is_modlocked:
+    elif not client.area.is_modlocked:
         client.area.unlock()
     else:
         raise ClientError('You must be authorized to do that.')
