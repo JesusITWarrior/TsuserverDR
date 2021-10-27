@@ -118,8 +118,6 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Puts you back to the character select screen.
 * **chars_restricted**
     - Lists all characters that are restricted in the current area.
-* **cleardoc**
-    - Clears the doc url of the current area.
 * **cid** "ID/char name/edited-to character/showname/char showname/OOC name"
     - Gives you the client ID of the target, or your own client ID if not given an argument.
 * **coinflip** "call"
@@ -129,7 +127,11 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
 * **discord**
     - Displays the invite link of the server's Discord server.
 * **doc** "url"
-    - Gives the doc url if blank, updates the doc url otherwise.
+    - Updates the URL of the document associated with the area.
+* **doc_clear**
+    - Clears the URL of the document associated with the area.
+* **doc_info**
+    - Displays the URL of the document associated with the area.
 * **exit**
     - Exits the server.
 * **files** "ID/char name/edited-to character/showname/char showname/OOC name"
@@ -743,6 +745,7 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **fa**: Same as /files_area.
 * **l**: Same as /look.
 * **party_members**: Same as /party_info. (D) (Deprecated October 25, 2021)
+* **cleardoc**: Same as /doc_clear. (D) (Deprecated October 26, 2021)
 
 #### GM+
 

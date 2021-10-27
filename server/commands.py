@@ -1253,28 +1253,6 @@ def ooc_cmd_cid(client: ClientManager.Client, arg: str):
         client.send_ooc('The client ID of {} is {}.'.format(arg, target.id))
 
 
-def ooc_cmd_cleardoc(client: ClientManager.Client, arg: str):
-    """
-    Clears the current area's doc.
-
-    SYNTAX
-    /cleardoc
-
-    PARAMETERS
-    None
-
-    EXAMPLES
-    /cleardoc
-    """
-
-    Constants.assert_command(client, arg, parameters='=0')
-
-    client.area.broadcast_ooc('{} cleared the doc link.'.format(client.displayname))
-    logger.log_server('[{}][{}]Cleared document. Old link: {}'
-                      .format(client.area.id, client.get_char_name(), client.area.doc), client)
-    client.area.change_doc()
-
-
 def ooc_cmd_cleargm(client: ClientManager.Client, arg: str):
     """ (OFFICER ONLY)
     Logs out a game master by ID or all game masters in the server if not given an ID and puts
@@ -1965,34 +1943,6 @@ def ooc_cmd_disemvowel(client: ClientManager.Client, arg: str):
         c.disemvowel = True
         logger.log_server('Disemvowelled {}.'.format(c.ipid), client)
         client.area.broadcast_ooc("{} was disemvowelled.".format(c.displayname))
-
-
-def ooc_cmd_doc(client: ClientManager.Client, arg: str):
-    """
-    Sends the area's current doc link to the user, or sets it to a new one.
-
-    SYNTAX
-    /doc {doc_link}
-
-    PARAMETERS
-    {doc_link}: Link to new document.
-
-    EXAMPLES
-    /doc https://www.google.com     :: Sets the document link to the Google homepage.
-    /doc                            :: Returns the current document (e.g. https://www.google.com)
-    """
-
-    # Clear doc case
-    if not arg:
-        client.send_ooc('Document: {}'.format(client.area.doc))
-        logger.log_server('[{}][{}]Requested document. Link: {}'
-                          .format(client.area.id, client.get_char_name(), client.area.doc), client)
-    # Set new doc case
-    else:
-        client.area.change_doc(arg)
-        client.area.broadcast_ooc('{} changed the doc link.'.format(client.displayname))
-        logger.log_server('[{}][{}]Changed document to: {}'
-                          .format(client.area.id, client.get_char_name(), arg), client)
 
 
 def ooc_cmd_dump(client: ClientManager.Client, arg: str):
@@ -9880,3 +9830,62 @@ def ooc_cmd_bg_info(client: ClientManager.Client, arg: str):
 
     msg += f'The current background is {client.area.background}.'
     client.send_ooc(msg)
+
+
+def ooc_cmd_doc(client: ClientManager.Client, arg: str):
+    """
+    Sends the area's current doc link to the user, or sets it to a new one.
+
+    SYNTAX
+    /doc {doc_link}
+
+    PARAMETERS
+    {doc_link}: Link to new document.
+
+    EXAMPLES
+    /doc https://www.google.com     :: Sets the document link to the Google homepage.
+    /doc                            :: Returns the current document (e.g. https://www.google.com)
+    """
+
+    Constants.assert_command(client, arg, parameters='>0')
+
+    client.area.change_doc(arg)
+    client.area.broadcast_ooc('{} changed the doc link.'.format(client.displayname))
+    logger.log_server('[{}][{}]Changed document to: {}'
+                        .format(client.area.id, client.get_char_name(), arg), client)
+
+
+def ooc_cmd_doc_clear(client: ClientManager.Client, arg: str):
+    """
+    Clears the current area's doc.
+
+    SYNTAX
+    /doc_clear
+
+    PARAMETERS
+    None
+
+    EXAMPLES
+    /doc_clear
+    """
+
+    Constants.assert_command(client, arg, parameters='=0')
+
+    if not client.area.doc:
+        raise ClientError('The area currently has no associated document.')
+
+    client.area.broadcast_ooc('{} cleared the doc link.'.format(client.displayname))
+    logger.log_server('[{}][{}]Cleared document. Old link: {}'
+                      .format(client.area.id, client.get_char_name(), client.area.doc), client)
+    client.area.change_doc()
+
+
+def ooc_cmd_doc_info(client: ClientManager.Client, arg: str):
+    Constants.assert_command(client, arg, parameters='=0')
+
+    if not client.area.doc:
+        raise ClientError('The area currently has no associated document.')
+
+    client.send_ooc('Document: {}'.format(client.area.doc))
+    logger.log_server('[{}][{}]Requested document. Link: {}'
+                        .format(client.area.id, client.get_char_name(), client.area.doc), client)

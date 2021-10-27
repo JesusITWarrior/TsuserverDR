@@ -698,3 +698,7 @@
   - Commands that previously said "Area List" now say "Map" (e.g. /getareas)
   - Renamed /area_list and /area_lists to /map and /map_list (old names still valid but marked for removal)
 * Added /bg_info, which gives the name of the current background (provided you are GM+, or the lights are on and you are not blind)
+* Revamped the /doc commands
+  - /doc now always expects at least one command, and will set the area's associated document
+  - /cleardoc was renamed to /doc_clear, and errors out if the area had no document associated
+  - /doc_info now returns the document associated with the area, and errors out if the area had no document associated

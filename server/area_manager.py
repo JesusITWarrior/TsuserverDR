@@ -79,7 +79,7 @@ class AreaManager:
             self.next_message_time = 0
             self.hp_def = 10
             self.hp_pro = 10
-            self.doc = 'No document.'
+            self.doc = ''
             self.status = 'IDLE'
             self.judgelog = []
             self.shoutlog = []
@@ -453,15 +453,16 @@ class AreaManager:
                     info += f'\r\n*{log}'
             return info
 
-        def change_doc(self, doc: str = 'No document.'):
+        def change_doc(self, doc: str = ''):
             """
             Changes the casing document of the area, usually a URL.
 
             Parameters
             ----------
             doc: str, optional
-                New casing document of the area. Defaults to 'No document.'
+                New casing document of the area. Defaults to the empty string.
             """
+
             self.doc = doc
 
         def get_evidence_list(self, client: ClientManager.Client):

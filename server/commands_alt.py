@@ -122,6 +122,15 @@ def ooc_cmd_area_lists(client, arg):
     do_command_deprecated('map_list', client, arg)
 
 
+def ooc_cmd_cleardoc(client, arg):
+    """
+    Old name for /doc_clear
+
+    """
+
+    do_command_deprecated('doc_clear', client, arg)
+
+
 def ooc_cmd_pw(client, arg):
     """
     Alias for /party_whisper.
