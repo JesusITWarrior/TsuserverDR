@@ -747,6 +747,8 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **charselect**: Same as /char_select. (D) (Deprecated October 26, 2021)
 * **reload**: Same as /char_reload. (D) (Deprecated October 26, 2021)
 * **defaultarea**: Same as /area_default. (D) (Deprecated October 27, 2021)
+* **currentmusic**: Same as /play_info. (D) (Deprecated October 27, 2021)
+* **randommusic**: Same as /play_random. (D) (Deprecated October 27, 2021)
 
 #### GM+
 

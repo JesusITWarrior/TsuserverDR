@@ -5551,59 +5551,6 @@ def ooc_cmd_randomchar(client: ClientManager.Client, arg: str):
     client.send_ooc('Randomly switched to `{}`.'.format(client.get_char_name()))
 
 
-def ooc_cmd_randommusic(client: ClientManager.Client, arg: str):
-    """
-    Plays a randomly chosen track from the player's current music list.
-    Returns an error if the player is IC-muted, if the player does not have DJ privileges, or
-    if the player triggers the server music flood guard.
-
-    SYNTAX
-    /randommusic
-
-    PARAMETERS:
-    None
-
-    EXAMPLES:
-    /randommusic       :: May play 'Ikoroshia.mp3', 'Despair Searching.mp3', etc.
-    """
-
-    Constants.assert_command(client, arg, parameters='=0')
-
-    if client.is_muted:  # Checks to see if the client has been muted by a mod
-        raise ClientError("You have been muted by a moderator.")
-    if not client.is_dj:
-        raise ClientError('You were blockdj\'d by a moderator.')
-
-    delay = client.change_music_cd()
-    if delay:
-        raise ClientError(f'You changed song too many times recently. Please try again after '
-                          f'{Constants.time_format(delay)}.')
-
-    # Find all music tracks
-    music_names = list()
-    music_list = client.music_list
-    if music_list is None:
-        music_list = client.server.music_list
-
-    for item in music_list:
-        songs = item['songs']
-        for song in songs:
-            name = song['name']
-            music_names.append(name)
-
-    if not music_names:
-        raise ClientError('No music tracks found in the current music list.')
-
-    random_music = random.choice(music_names)
-    client.area.play_track(random_music, client, raise_if_not_found=False, reveal_sneaked=False)
-
-    client.send_ooc('You have played the randomly chosen track `{}` in your area.'
-                    .format(random_music))
-    client.send_ooc_others('(X) {} [{}] has played the randomly chosen track `{}` in your area.'
-                           .format(client.displayname, client.id, random_music),
-                           is_zstaff_flex=True, in_area=True)
-
-
 def ooc_cmd_refresh(client: ClientManager.Client, arg: str):
     """ (MOD ONLY)
     Reloads the following files for the server: characters, default music list, and background list.
@@ -9856,3 +9803,56 @@ def ooc_cmd_area_default(client: ClientManager.Client, arg: str):
 
     client.server.default_area = int(arg)
     client.send_ooc('Set default area to {}.'.format(arg))
+
+
+def ooc_cmd_play_random(client: ClientManager.Client, arg: str):
+    """
+    Plays a randomly chosen track from the player's current music list.
+    Returns an error if the player is IC-muted, if the player does not have DJ privileges, or
+    if the player triggers the server music flood guard.
+
+    SYNTAX
+    /play_random
+
+    PARAMETERS:
+    None
+
+    EXAMPLES:
+    /play_random       :: May play 'Ikoroshia.mp3', 'Despair Searching.mp3', etc.
+    """
+
+    Constants.assert_command(client, arg, parameters='=0')
+
+    if client.is_muted:  # Checks to see if the client has been muted by a mod
+        raise ClientError("You have been muted by a moderator.")
+    if not client.is_dj:
+        raise ClientError('You were blockdj\'d by a moderator.')
+
+    delay = client.change_music_cd()
+    if delay:
+        raise ClientError(f'You changed song too many times recently. Please try again after '
+                          f'{Constants.time_format(delay)}.')
+
+    # Find all music tracks
+    music_names = list()
+    music_list = client.music_list
+    if music_list is None:
+        music_list = client.server.music_list
+
+    for item in music_list:
+        songs = item['songs']
+        for song in songs:
+            name = song['name']
+            music_names.append(name)
+
+    if not music_names:
+        raise ClientError('No music tracks found in the current music list.')
+
+    random_music = random.choice(music_names)
+    client.area.play_track(random_music, client, raise_if_not_found=False, reveal_sneaked=False)
+
+    client.send_ooc('You have played the randomly chosen track `{}` in your area.'
+                    .format(random_music))
+    client.send_ooc_others('(X) {} [{}] has played the randomly chosen track `{}` in your area.'
+                           .format(client.displayname, client.id, random_music),
+                           is_zstaff_flex=True, in_area=True)

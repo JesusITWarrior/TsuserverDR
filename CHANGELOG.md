@@ -704,3 +704,5 @@
   - /doc_info now returns the document associated with the area, and errors out if the area had no document associated
 * Removed /gmlock and associated references
 * Renamed /reload to /char_reload, and /charselect to /char_select
+* Renamed /defaultarea to /area_default
+* Renamed /currentmusic to /play_info, and /randommusic to /play_random

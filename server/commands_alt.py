@@ -158,6 +158,24 @@ def ooc_cmd_defaultarea(client, arg):
     do_command_deprecated('area_default', client, arg)
 
 
+def ooc_cmd_currentmusic(client, arg):
+    """
+    Old name for /play_info
+
+    """
+
+    do_command_deprecated('play_info', client, arg)
+
+
+def ooc_cmd_randommusic(client, arg):
+    """
+    Old name for /play_random
+
+    """
+
+    do_command_deprecated('play_random', client, arg)
+
+
 def ooc_cmd_pw(client, arg):
     """
     Alias for /party_whisper.
