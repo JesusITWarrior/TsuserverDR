@@ -741,6 +741,31 @@ class AOProtocol(asyncio.Protocol):
         self.client.last_ic_message = msg
         self.client.last_active = Constants.get_time()
 
+    def _process_ooc_command(self, cmd, client):
+        called_function = f'ooc_cmd_{cmd}'
+        if hasattr(self.server.commands, called_function):
+            function = getattr(self.server.commands, called_function)
+            return function
+
+        get_command_alias = getattr(self.server.commands_alt, 'get_command_alias')
+        command_alias = get_command_alias(cmd)
+        if command_alias:
+            called_function = f'ooc_cmd_{command_alias}'
+            function = getattr(self.server.commands, called_function)
+            return function
+
+        get_command_deprecated = getattr(self.server.commands_alt, 'get_command_deprecated')
+        command_deprecated = get_command_deprecated(cmd)
+        if command_deprecated:
+            called_function = f'ooc_cmd_{command_deprecated}'
+            function = getattr(self.server.commands, called_function)
+
+            client.send_ooc('This command is deprecated and pending removal in 4.4. '
+                            'Please use /{} next time.'.format(command_deprecated))
+            return function
+
+        return None
+
     def net_cmd_ct(self, args: List[str]):
         """ OOC Message
 
@@ -783,16 +808,8 @@ class AOProtocol(asyncio.Protocol):
             if len(spl) == 2:
                 arg = spl[1][:1024]
             arg = Constants.trim_extra_whitespace(arg)  # Do it again because args may be weird
-            try:
-                called_function = 'ooc_cmd_{}'.format(cmd)
-                function = None  # Double assignment to check if it matched to a function later
-                function = getattr(self.server.commands, called_function)
-            except AttributeError:
-                try:
-                    function = getattr(self.server.commands_alt, called_function)
-                except AttributeError:
-                    self.client.send_ooc(f'Invalid command `{cmd}`.')
 
+            function = self._process_ooc_command(cmd, self.client)
             if function:
                 try:
                     function(self.client, arg)
@@ -801,6 +818,8 @@ class AOProtocol(asyncio.Protocol):
                         self.client.send_ooc(ex)
                     else:
                         self.client.send_ooc(type(ex).__name__)
+            else:
+                self.client.send_ooc(f'Invalid command `{cmd}`.')
         else:
             # Censor passwords if accidentally said without a slash in OOC
             for password in self.server.all_passwords:

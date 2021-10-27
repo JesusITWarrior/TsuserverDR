@@ -124,8 +124,6 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Gives you the client ID of the target, or your own client ID if not given an argument.
 * **coinflip** "call"
     - Flips a coin and returns its result, as well as whatever it is called with (e.g. a prediction, consequences for heads/tails, etc.) if given.
-* **currentmusic**
-    - Displays the current music, who played it, and its source if given in the music list.
 * **discord**
     - Displays the invite link of the server's Discord server.
 * **doc** "url"
@@ -223,6 +221,10 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Returns "Pong", used to check for server connection.
 * **play** "song.mp3"
     - Plays a song, provided the area you are in allows non-staff members to run this command.
+* **play_info**
+    - Displays the current music, who played it, and its source if given in the music list.
+* **play_random**
+    - Plays a randomly chosen song from your current music list.
 * **pm** "ID/char name/edited-to character/showname/char showname/OOC name" "message"
     - PMs the target.
 * **pos** "position"
@@ -230,8 +232,6 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Positions: 'def', 'pro', 'hld', 'hlp', 'jud', 'wit'
 * **randomchar**
     - Changes your character to a randomly chosen one.
-* **randommusic**
-    - Plays a randomly chosen song from your current music list.
 * **roll** "number of dice"d"number of faces" "modifiers"
     - Rolls as many dice as given with the given number of faces, and applies modifiers if given. If no arguments are given, rolls one d6.
 * **rollp** "number of dice"d"number of faces" "modifiers"
