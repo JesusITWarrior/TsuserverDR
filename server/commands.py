@@ -5932,44 +5932,6 @@ def ooc_cmd_rplay(client: ClientManager.Client, arg: str):
                         'loop.')
 
 
-def ooc_cmd_rpmode(client: ClientManager.Client, arg: str):
-    """ (STAFF ONLY)
-    Toggles RP mode on/off in the server. If turned on, all non-logged in users will be subject to
-    RP rules. Some effects include: unable to use /getarea and /getareas in areas that disable it.
-
-    SYNTAX
-    /rpmode <new_status>
-
-    PARAMETERS
-    <new_status>: 'on' or 'off'
-
-    EXAMPLES
-    /rpmode on              :: Turns on RP mode
-    /rpmode off             :: Turns off RP mode
-    """
-
-    try:
-        Constants.assert_command(client, arg, is_staff=True, parameters='=1')
-    except ArgumentError:
-        raise ArgumentError('You must specify either on or off.')
-    if not client.server.config['rp_mode_enabled']:
-        raise ClientError("RP mode is disabled in this server.")
-
-    if arg == 'on':
-        client.server.rp_mode = True
-        for c in client.server.get_clients():
-            c.send_ooc('RP mode enabled.')
-            if not c.is_staff():
-                c.in_rp = True
-    elif arg == 'off':
-        client.server.rp_mode = False
-        for c in client.server.get_clients():
-            c.send_ooc('RP mode disabled.')
-            c.in_rp = False
-    else:
-        client.send_ooc('Expected on or off.')
-
-
 def ooc_cmd_scream(client: ClientManager.Client, arg: str):
     """
     Sends a message in the OOC chat visible to all staff members and non-deaf users that are in an
@@ -9856,3 +9818,41 @@ def ooc_cmd_doc_info(client: ClientManager.Client, arg: str):
     client.send_ooc('Document: {}'.format(client.area.doc))
     logger.log_server('[{}][{}]Requested document. Link: {}'
                         .format(client.area.id, client.get_char_name(), client.area.doc), client)
+
+
+def ooc_cmd_toggle_rpmode(client: ClientManager.Client, arg: str):
+    """ (STAFF ONLY)
+    Toggles RP mode on/off in the server. If turned on, all non-logged in users will be subject to
+    RP rules. Some effects include: unable to use /getarea and /getareas in areas that disable it.
+
+    SYNTAX
+    /rpmode <new_status>
+
+    PARAMETERS
+    <new_status>: 'on' or 'off'
+
+    EXAMPLES
+    /toggle_rpmode on              :: Turns on RP mode
+    /toggle_rpmode off             :: Turns off RP mode
+    """
+
+    try:
+        Constants.assert_command(client, arg, is_staff=True, parameters='=1')
+    except ArgumentError:
+        raise ArgumentError('You must specify either on or off.')
+    if not client.server.config['rp_mode_enabled']:
+        raise ClientError("RP mode is disabled in this server.")
+
+    if arg == 'on':
+        client.server.rp_mode = True
+        for c in client.server.get_clients():
+            c.send_ooc('RP mode enabled.')
+            if not c.is_staff():
+                c.in_rp = True
+    elif arg == 'off':
+        client.server.rp_mode = False
+        for c in client.server.get_clients():
+            c.send_ooc('RP mode disabled.')
+            c.in_rp = False
+    else:
+        client.send_ooc('Expected on or off.')
