@@ -470,8 +470,6 @@ GMs can:
     - If no ID is given, target is yourself.
 * **rplay** "song.mp3"
     - Plays a song in all areas reachable from the current one.
-* **rpmode** "on/off"
-    - Toggles RP mode.
 * **scream_range**
     - Returns the areas that can listen to screams sent from the current area.
 * **scream_set** "area"
@@ -501,6 +499,8 @@ GMs can:
 	- Changes your ability to receive autopass notifications from players that do not have autopass on. By default it is off.
 * **toggle_allrolls**
     - Changes your ability to receive /roll and /rollp results from other areas. By default it is off.
+* **toggle_rpmode** "on/off"
+    - Toggles RP mode.
 * **transient** "ID"
     - Changes a player's ability to ignore passage locks and thus access all areas from any given area. By default it is off.
 * **trial**

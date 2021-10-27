@@ -702,3 +702,5 @@
   - /doc now always expects at least one command, and will set the area's associated document
   - /cleardoc was renamed to /doc_clear, and errors out if the area had no document associated
   - /doc_info now returns the document associated with the area, and errors out if the area had no document associated
+* Removed /gmlock and associated references
+* Renamed /rpmode to /toggle_rpmode

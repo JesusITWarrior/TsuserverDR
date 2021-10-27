@@ -131,6 +131,15 @@ def ooc_cmd_cleardoc(client, arg):
     do_command_deprecated('doc_clear', client, arg)
 
 
+def ooc_cmd_rpmode(client, arg):
+    """
+    Old name for /rpmode
+
+    """
+
+    do_command_deprecated('toggle_rpmode', client, arg)
+
+
 def ooc_cmd_pw(client, arg):
     """
     Alias for /party_whisper.
