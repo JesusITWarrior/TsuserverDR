@@ -131,13 +131,22 @@ def ooc_cmd_cleardoc(client, arg):
     do_command_deprecated('doc_clear', client, arg)
 
 
-def ooc_cmd_rpmode(client, arg):
+def ooc_cmd_reload(client, arg):
     """
-    Old name for /rpmode
+    Old name for /char_reload
 
     """
 
-    do_command_deprecated('toggle_rpmode', client, arg)
+    do_command_deprecated('char_reload', client, arg)
+
+
+def ooc_cmd_charselect(client, arg):
+    """
+    Old name for /char_select
+
+    """
+
+    do_command_deprecated('char_select', client, arg)
 
 
 def ooc_cmd_pw(client, arg):

@@ -1088,27 +1088,27 @@ def ooc_cmd_charlog(client: ClientManager.Client, arg: str):
         client.send_ooc(info)
 
 
-def ooc_cmd_charselect(client: ClientManager.Client, arg: str):
+def ooc_cmd_char_select(client: ClientManager.Client, arg: str):
     """ (VARYING REQUIREMENTS)
     Opens the character selection screen for the current user
     OR (MOD ONLY) forces another user by identifier to have that screen open, freeing up their
     character in the process.
 
     SYNTAX
-    /charselect
-    /charselect {client_id}
-    /charselect {client_ipid}
+    /char_select
+    /char_select {client_id}
+    /char_select {client_ipid}
 
     PARAMETERS
     {client_id}: Client identifier (number in brackets in /getarea).
     {client_ipid}: IPID for the client (number in parentheses in /getarea).
 
     EXAMPLES
-    /charselect                    :: Open character selection screen for the current user.
-    /charselect 1                  :: Forces open the character selection screen for the user
-                                      whose client ID is 1
-    /charselect 1234567890         :: Forces open the character selection screen for the user
-                                      whose IPID is 1234567890
+    /char_select                    :: Open character selection screen for the current user.
+    /char_select 1                  :: Forces open the character selection screen for the user
+                                       whose client ID is 1
+    /char_select 1234567890         :: Forces open the character selection screen for the user
+                                       whose IPID is 1234567890
     """
 
     # Open for current user case
@@ -5652,26 +5652,6 @@ def ooc_cmd_refresh(client: ClientManager.Client, arg: str):
     client.send_ooc('You have reloaded the server.')
 
 
-def ooc_cmd_reload(client: ClientManager.Client, arg: str):
-    """
-    Reloads the character for the current user (equivalent to switching to the current character).
-
-    SYNTAX
-    /reload
-
-    PARAMETERS
-    None
-
-    EXAMPLE
-    /reload
-    """
-
-    Constants.assert_command(client, arg, parameters='=0')
-
-    client.reload_character()
-    client.send_ooc('Character reloaded.')
-
-
 def ooc_cmd_reload_commands(client: ClientManager.Client, arg: str):
     """ (MOD ONLY)
     Reloads the commands.py file. Use only if restarting is not a viable option.
@@ -9856,3 +9836,23 @@ def ooc_cmd_toggle_rpmode(client: ClientManager.Client, arg: str):
             c.in_rp = False
     else:
         client.send_ooc('Expected on or off.')
+
+
+def ooc_cmd_char_reload(client: ClientManager.Client, arg: str):
+    """
+    Reloads the character for the current user (equivalent to switching to the current character).
+
+    SYNTAX
+    /char_reload
+
+    PARAMETERS
+    None
+
+    EXAMPLE
+    /char_reload
+    """
+
+    Constants.assert_command(client, arg, parameters='=0')
+
+    client.reload_character()
+    client.send_ooc('Character reloaded.')

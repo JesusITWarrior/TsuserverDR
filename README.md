@@ -114,7 +114,9 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - If someone is bleeding in the current area, the cleaning process will fail.
 * **bloodtrail_smear**
     - Smears the bloodtrail in the current area.
-* **charselect**
+* **char_reload**
+    - Reloads your character ini file.
+* **char_select**
     - Puts you back to the character select screen.
 * **chars_restricted**
     - Lists all characters that are restricted in the current area.
@@ -230,8 +232,6 @@ Additional notes are listed at the end of the command list. Unless otherwise spe
     - Changes your character to a randomly chosen one.
 * **randommusic**
     - Plays a randomly chosen song from your current music list.
-* **reload**
-    - Reloads your character ini file.
 * **roll** "number of dice"d"number of faces" "modifiers"
     - Rolls as many dice as given with the given number of faces, and applies modifiers if given. If no arguments are given, rolls one d6.
 * **rollp** "number of dice"d"number of faces" "modifiers"
@@ -680,7 +680,7 @@ GMs can:
 * **can_iniswap**
     - Changes the iniswap status in the current area.
     - Even if iniswap at all is forbidden you can configure all-time allowed iniswaps in *iniswaps.yaml*
-* **charselect** "ID"
+* **char_select** "ID"
     - Kicks a player back to the character select screen. If no ID was entered then target yourself.
 * **defaultarea** "area number"
     - Sets the given area to be the area all future players join when they connect to the server.
@@ -744,6 +744,8 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **l**: Same as /look.
 * **party_members**: Same as /party_info. (D) (Deprecated October 25, 2021)
 * **cleardoc**: Same as /doc_clear. (D) (Deprecated October 26, 2021)
+* **charselect**: Same as /char_select. (D) (Deprecated October 26, 2021)
+* **reload**: Same as /char_reload. (D) (Deprecated October 26, 2021)
 
 #### GM+
 
