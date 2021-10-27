@@ -746,6 +746,7 @@ Commands without (D) are aliases to commands and can be freely used (subject to 
 * **cleardoc**: Same as /doc_clear. (D) (Deprecated October 26, 2021)
 * **charselect**: Same as /char_select. (D) (Deprecated October 26, 2021)
 * **reload**: Same as /char_reload. (D) (Deprecated October 26, 2021)
+* **defaultarea**: Same as /area_default. (D) (Deprecated October 27, 2021)
 
 #### GM+
 

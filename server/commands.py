@@ -1781,34 +1781,6 @@ def ooc_cmd_deafen(client: ClientManager.Client, arg: str):
     target.change_deafened(new_deaf)
 
 
-def ooc_cmd_defaultarea(client: ClientManager.Client, arg: str):
-    """ (MOD ONLY)
-    Set the default area by area ID for all future clients to join when connecting to the server.
-    Returns an error if the area ID is invalid.
-
-    SYNTAX
-    /defaultarea <area_id>
-
-    PARAMETERS
-    <area_id>: Intended default area ID
-
-    EXAMPLES
-    /defaultarea 1          :: Set area 1 to be the default area.
-    """
-
-    Constants.assert_command(client, arg, is_mod=True, parameters='=1')
-
-    try:
-        client.server.area_manager.get_area_by_id(int(arg))
-    except ValueError:
-        raise ArgumentError('Expected numerical value for area ID.')
-    except AreaError:
-        raise ClientError('ID {} does not correspond to a valid area ID.'.format(arg))
-
-    client.server.default_area = int(arg)
-    client.send_ooc('Set default area to {}.'.format(arg))
-
-
 def ooc_cmd_dicelog(client: ClientManager.Client, arg: str):
     """ (STAFF ONLY)
     Obtains the last 20 roll results from the target by client ID or the user if not given any.
@@ -9856,3 +9828,31 @@ def ooc_cmd_char_reload(client: ClientManager.Client, arg: str):
 
     client.reload_character()
     client.send_ooc('Character reloaded.')
+
+
+def ooc_cmd_area_default(client: ClientManager.Client, arg: str):
+    """ (MOD ONLY)
+    Set the default area by area ID for all future clients to join when connecting to the server.
+    Returns an error if the area ID is invalid.
+
+    SYNTAX
+    /area_default <area_id>
+
+    PARAMETERS
+    <area_id>: Intended default area ID
+
+    EXAMPLES
+    /area_default 1          :: Set area 1 to be the default area.
+    """
+
+    Constants.assert_command(client, arg, is_mod=True, parameters='=1')
+
+    try:
+        client.server.area_manager.get_area_by_id(int(arg))
+    except ValueError:
+        raise ArgumentError('Expected numerical value for area ID.')
+    except AreaError:
+        raise ClientError('ID {} does not correspond to a valid area ID.'.format(arg))
+
+    client.server.default_area = int(arg)
+    client.send_ooc('Set default area to {}.'.format(arg))

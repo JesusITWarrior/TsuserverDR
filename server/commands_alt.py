@@ -149,6 +149,15 @@ def ooc_cmd_charselect(client, arg):
     do_command_deprecated('char_select', client, arg)
 
 
+def ooc_cmd_defaultarea(client, arg):
+    """
+    Old name for /area_default
+
+    """
+
+    do_command_deprecated('area_default', client, arg)
+
+
 def ooc_cmd_pw(client, arg):
     """
     Alias for /party_whisper.
